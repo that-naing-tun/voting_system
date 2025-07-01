@@ -1,0 +1,150 @@
+<template>
+  <div class="container mx-auto p-6">
+    <!-- Main Content (Only shown when queen data exists) -->
+    <div v-if="queen && hasVoted">
+      <!-- Welcome Text -->
+      <div class="text-center mb-4">
+        <p class="text-3xl font-bold text-blue-600">
+          You voted for <span class="text-green-600">{{ queen.name }}</span>
+        </p>
+      </div>
+
+      <!-- Queen Details Section -->
+      <div class="bg-white shadow-lg rounded-lg p-6 mx-auto w-full max-w-md">
+        <!-- Swiper Slider for images -->
+        <swiper
+          :modules="modules"
+          :navigation="true"
+          class="w-full h-auto rounded-t-lg mySwiper"
+          :space-between="10"
+          :slides-per-view="1"
+          loop
+        >
+          <swiper-slide v-for="(image, index) in queen.imageUrls" :key="index">
+            <img
+              class="w-full h-auto object-cover rounded-t-lg"
+              :src="image"
+              :alt="'Image ' + (index + 1)"
+            />
+          </swiper-slide>
+        </swiper>
+
+        <!-- Queen Details -->
+        <div class="text-center mt-4">
+          <h2 class="text-3xl font-bold text-blue-700">
+            Name: {{ queen.name }}
+          </h2>
+
+          <!-- Vote Button -->
+          <button
+            class="mt-6 py-2 px-4 rounded text-white focus:outline-none"
+            :class="
+              hasVoted
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600'
+            "
+            :disabled="hasVoted"
+            @click="showRandomCodeForm"
+          >
+            {{ hasVoted ? "Vote Submitted" : "Vote" }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- If user has not voted yet, show a message -->
+    <div v-else-if="queen === null && !hasVoted">
+      <div class="text-center mt-6">
+        <h1 class="text-xl font-bold mb-4 text-red-600">
+          You have not voted yet.
+        </h1>
+        <p class="text-center">
+          Please go back and vote for your favorite queen to see the details
+          here.
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from "vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Navigation } from "swiper/modules";
+
+export default {
+  components: {
+    Swiper,
+    SwiperSlide,
+  },
+  setup() {
+    const queen = ref(null); // To store the voted queen's data
+    const hasVoted = ref(false); // Track if the user has already voted
+    const modules = [Navigation];
+
+    // Fetch the queen's data based on the ID stored in localStorage
+    const fetchVotedQueen = () => {
+      const votedQueenId = localStorage.getItem("votedQueenId");
+      if (!votedQueenId) {
+        queen.value = null;
+        hasVoted.value = false;
+        return;
+      }
+      // Retrieve all queens data from localStorage
+      const queensData = localStorage.getItem("queensData"); // Use your actual key
+      if (queensData) {
+        try {
+          const parsedDatas = JSON.parse(queensData);
+          const parsedQueens = parsedDatas.data || [];
+
+          const votedQueen = parsedQueens.find(
+            (queen) => queen.id === votedQueenId
+          );
+          if (votedQueen) {
+            queen.value = votedQueen;
+            hasVoted.value = true;
+          } else {
+            console.log("Voted queen not found.");
+            queen.value = null;
+            hasVoted.value = false;
+          }
+        } catch (error) {
+          console.error("Error parsing queensData:", error);
+          queen.value = null;
+          hasVoted.value = false;
+        }
+      } else {
+        console.log("No queens data found in localStorage.");
+        queen.value = null;
+        hasVoted.value = false;
+      }
+    };
+
+    // Fetch the voted queen data when the component is mounted
+    onMounted(() => {
+      fetchVotedQueen();
+    });
+
+    // Simulate showing random code form (you can replace this function with your logic)
+    const showRandomCodeForm = () => {
+      console.log("Random Code Form displayed (You can replace this)");
+    };
+
+    return {
+      queen,
+      hasVoted,
+      modules,
+      showRandomCodeForm,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.mySwiper {
+  max-width: 100%;
+  overflow: hidden;
+}
+</style>

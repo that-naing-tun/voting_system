@@ -7,9 +7,18 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@cloudinary/url-gen": "^1.21.0",
+    "@cloudinary/vue": "^1.13.0",
+    "autoprefixer": "^10.4.20",
+    "aws-sdk": "^2.1692.0",
     "core-js": "^3.8.3",
+    "firebase": "^11.0.2",
+    "postcss": "^8.4.49",
+    "swiper": "^11.1.14",
+    "tailwindcss": "^3.4.14",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
